@@ -71,14 +71,29 @@ int graph::addV(const char* label)
 
 int graph::display()
 {
+  cout << " ";
+  for(int i = 0 ; i < size; i++)
+    {
+      if(copy[i] == true)
+	{
+	  cout << " " << verts[i];
+	}
+    }
   for(int i = 0; i < size; i++)
     {
       if(copy[i] == true)
 	{
-	  cout << verts[i] << endl;
+	  cout << endl << verts[i];
+	  for(int k = 0; k < size; k++)
+	    {
+	      if(copy[k] == true)
+		{
+		  cout << " " << array[i][k];
+		}
+	    }
 	}
     }
-  cout << endl;
+  /*
   for(int i = 0; i < size; i++)
     {
       if(copy[i] == true)
@@ -92,7 +107,7 @@ int graph::display()
 	    }
 	  cout << endl;
 	}
-    }
+	}*/
   return 1;
 }
 
@@ -125,7 +140,8 @@ int graph::addE(const char* l1, const char* l2, int weight)
 {
   int index1 = findIndex(l1);
   int index2 = findIndex(l2);
-  if(index1 == -1 || index2 == -1)
+  
+  if(index1 == -1 || index2 == -1) //if both indexes are empty (-1)
     {
       return 0;
     }
@@ -250,6 +266,6 @@ void graph::printPath(int weight[], int index)
   else
     {
       printPath(weight, weight[index]);
-      cout << verts[index] << " ";
+      cout << verts[index] << " -> ";
     }
 }
