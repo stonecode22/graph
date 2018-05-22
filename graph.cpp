@@ -79,105 +79,93 @@ int graph::display()
   cout << " ";
   for(int i = 0 ; i < size; i++)
     {
-      if(copy[i] == true)
+      if(copy[i] == true) //if vertices are active (not empty)
 	{
-	  cout << " " << verts[i];
+	  cout << "  " << verts[i]; //print horizontal axis
 	}
     }
   for(int i = 0; i < size; i++)
     {
-      if(copy[i] == true)
+      if(copy[i] == true) //if vertices are active
 	{
-	  cout << endl << verts[i];
+	  cout << endl << verts[i]; //display vert axis
 	  for(int k = 0; k < size; k++)
 	    {
 	      if(copy[k] == true)
 		{
-		  cout << " " << array[i][k];
+		  cout << "  " << array[i][k]; //print the edge data
 		}
 	    }
 	}
     }
-  /*
-  for(int i = 0; i < size; i++)
-    {
-      if(copy[i] == true)
-	{
-	  for(int k = 0; k < size; k++)
-	    {
-	      if(copy[k] == true)
-		{
-		  cout << " " << array[i][k];
-		}
-	    }
-	  cout << endl;
-	}
-	}*/
   return 1;
 }
 
+//remove vertex
 int graph::remV(const char* label)
 {
-  int index = findIndex(label);
-  if(index == -1)
+  int index = findIndex(label); //find the label for a vertex
+  if(index == -1) //if -1 (empty), do nothing
     {
       return 0;
     }
-  if(index < size)
+  if(index < size) //if the index is within the size boundaries of the array
     {
       for(int i = 0; i < size; i++)
 	{
-	  array[index][i] = 0;
+	  array[index][i] = 0; //set all data values in both row and column of vertex to 0
 	  array[i][index] = 0;
-	  }
-      delete[] verts[index];
-      copy[index] = false;
+	}
+      delete[] verts[index]; //delete the index
+      copy[index] = false; //set the bool to false, making this vertex not display or be used
       return 1;
     }
-  else
+  else //if not, do nothing
     {
       return 0;
     }
 }
 
-
+//add edge
 int graph::addE(const char* l1, const char* l2, int weight)
 {
-  int index1 = findIndex(l1);
-  int index2 = findIndex(l2);
+  int index1 = findIndex(l1); //find index for 1st vertex
+  int index2 = findIndex(l2); //find index for 2nd vertex
   
   if(index1 == -1 || index2 == -1) //if both indexes are empty (-1)
     {
-      return 0;
+      return 0; //do nothing
     }
-  array[index1][index2] = weight;
+  array[index1][index2] = weight; //set the 2D index to the weight int
   return 1;
 }
 
+//remove edge
 int graph::remE(const char* l1, const char* l2)
 {
-  int index1 = findIndex(l1);
+  int index1 = findIndex(l1); //find indices
   int index2 = findIndex(l2);
-  if(index1 == -1 || index2 == -1)
+  if(index1 == -1 || index2 == -1) //if empty, do nothing
     {
       return 0;
     }
-  else
+  else //if not empty
     {
-      array[index1][index2] = 0;
+      array[index1][index2] = 0; //set edge to be 0 (no edge)
       return 1;
     }
 }
 
-
+//finds index
 int graph::findIndex(const char* label)
 {
   int index = 0;
+  //if index is active, label matches with the vertex name, and within the boundaries
   while(copy[index] == true && strcmp(verts[index], label) != 0 && (index < size))
     {
-      index++;
+      index++; //traverse till empty
     }
-  if(index < size)
+  if(index < size) //when empty, but still inside the boundaries, return the index
     {
       return index;
     }
@@ -187,41 +175,45 @@ int graph::findIndex(const char* label)
     }
 }
 
+//finds shortest path using Dijkstra's algorithm (Breadth-search)
 int graph::findPath(const char* l1, const char* l2)
 {
-  int index1 = findIndex(l1);
+  int index1 = findIndex(l1); //find indices [ERROR: WHEN DELETING, INDEX IS 1 BEHIND AROUND DELETED VERTEX]
   int index2 = findIndex(l2);
-  if(index1 == -1 || index2 == -1)
+  if(index1 == -1 || index2 == -1) //if empty
     {
       return 0; //no edges
     }
-  bool visit[size];
-  int dist[size];
-  int index[size];
+  bool visit[size]; //bool array that stores whether or not the index has already been visited
+  int dist[size]; //int array finding the distance
+  int index[size]; //int array including the next index to traverse to
 
+  //set up
   for(int i = 0; i < size; i++)
     {
-      visit[i] = false;
-      dist[i] = INT_MAX;
-      index[i] = -1;
+      visit[i] = false; //nothing has been visited yet
+      dist[i] = INT_MAX; //all distances will be set to "infinity"
+      index[i] = -1; //-1 indicates the vertex we're on first
     }
 
-  dist[index1] = 0;
+  dist[index1] = 0; //dist of the 1st index is 0 to itself
 
   for(int i = 0; i < size - 1; i++)
     {
-      int shortEdge = shortE(visit, dist);
+      int shortEdge = shortE(visit, dist); //finds the index
 
-      visit[shortEdge] = true;
+      visit[shortEdge] = true; //it's been visited, set to true
       for(int k = 0; k < size; k++)
 	{
+	  //if index k does not exist, array of [index][k] does, distance is not infinity, and the distances are not as big as infinity
 	  if(!visit[k] && array[shortEdge][k] && dist[shortEdge] != INT_MAX && ((array[shortEdge][k] + dist[shortEdge]) < dist[k]))
 	    {
-	      index[k] = shortEdge;
-	      dist[k] = array[shortEdge][k] + dist[shortEdge];
+	      index[k] = shortEdge; //set the index to the shortEdge index
+	      dist[k] = array[shortEdge][k] + dist[shortEdge]; //set the distance to an amount less than infinity
 	    }
 	}
     }
+  /*
   for(int i = 0; i < size; i++)
     {
       if(copy[i] == true)
@@ -239,39 +231,50 @@ int graph::findPath(const char* l1, const char* l2)
       if(copy[i] == true)
       cout << index[i] << " ";
     }
+  */
   
-  
-  cout << verts[index1] << " ";
-  printPath(index, index2);
-  cout << " -> ";
-  cout << "\nWeight: " << dist[index2];
+  cout << "Path: " << verts[index1]; //lists out the first vertex visited
+  printPath(index, index2); //then the other vertices visited
+  if(dist[index2] != INT_MAX) //if dist[index2], or the weight of the entire path exists
+    {
+      cout << "\nWeight: " << dist[index2]; //gives the weight
+      cout << "\nIndex1 = " << index1 << endl;
+      cout << "Index2 = " << index2 << endl;
+    }
+  else //if it doesn't
+    {
+      cout << "\nWeight: N/A\n"; //indicates that there is no path
+    }
 }
 
+//sets the short edge
 int graph::shortE(bool visit[], int weight[])
 {
-  int min = INT_MAX;
-  int index;
+  int min = INT_MAX; //the minimum initially set to infinity
+  int index; 
 
   for(int i = 0; i < size; i++)
     {
+      //if not visited yet, and the weight is less than infinity
       if(visit[i] == false && weight[i] < min)
 	{
-	  min = weight[i];
-	  index = i;
+	  min = weight[i]; //set the weight to the number less than infinity
+	  index = i; //set the index to where this is
 	}
     }
-  return index;
+  return index; //return the index
 }
 
+//prints the shortest path
 void graph::printPath(int weight[], int index)
 {
-  if(weight[index] == -1)
+  if(weight[index] == -1) //if weight is -1/empty, do nothing
     {
       return;
     }
-  else
+  else //if not,
     {
-      printPath(weight, weight[index]);
-      cout << verts[index] << " -> ";
+      printPath(weight, weight[index]); //recursively call function
+      cout << " -> " << verts[index];
     }
 }
