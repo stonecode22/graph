@@ -1,74 +1,79 @@
 #include"graph.h"
 
+//constructor to initalize bool table
 graph::graph()
 {
-  size = MAX;
-  copy = new bool[size];
-  for(int i = 0; i < size; i++)
+  size = MAX; //make size MAX (20)
+  copy = new bool[size]; //make a bool chart
+  for(int i = 0; i < size; i++) //initialize the elements to false
     {
       copy[i] = false;
     }
 }
 
+//constructor to initalize edge and vertex tables
 graph::graph(int value)
 {
-  size = value;
-  copy = new bool[size];
+  size = value; //value is size, which is MAX
+  copy = new bool[size]; //bool table
   for(int i = 0; i < size; i++)
     {
       copy[i] = false;
     }
-  array = new int*[size];
+  array = new int*[size]; //edge table c
   for(int i = 0; i < size; i++)
     {
-      array[i] = new int[size];
+      array[i] = new int[size]; //make space for a 2d array
       for(int k = 0; k < size; k++)
 	{
-	  array[i][k] = 0;
+	  array[i][k] = 0; //initialize index values to 0
 	}
     }
-  verts = new char*[size];
+  verts = new char*[size]; //make a vertex table inserting into the array table (creating a 2 dim. array)
 }
 
+//deconstructor to delete everything
 graph::~graph()
 {
   for(int i = 0; i < size; i++)
     {
-      delete[] array[i];
+      delete[] array[i]; //delete each index in the array
     }
-  delete[] array;
+  delete[] array; //delete the entire array itself
   for(int i = 0; i < size; i++)
     {
-      if(copy[i] == true)
+      if(copy[i] == true) //if not already deleted (use of bool table)
 	{
-	  delete[] verts[i];
+	  delete[] verts[i]; //then delete the index
 	}
     }
-  delete[] verts;
-  delete[] copy;
-  size = 0;
+  delete[] verts; //delete the entire verts table
+  delete[] copy; //delete the bool table after
+  size = 0; //make size = 0;
 }
 
+//Add Vertex
 int graph::addV(const char* label)
 {
-  int index = findIndex(label);
-  if(index == -1)
+  int index = findIndex(label); //find the index for the label
+  if(index == -1) //if it returns -1 (-1 means "empty/space allocated")
     {
-      return 0;
+      return 0; //do nothing
     }
-  if(index < size)
+  if(index < size) //if the index is less than the size
     {
-      verts[index] = new char[strlen(label)+1];
-      strcpy(verts[index], label);
-      copy[index] = true;
+      verts[index] = new char[strlen(label)+1]; //make a new vertex in the next empty spot
+      strcpy(verts[index], label); //copy label into the vertex[index]
+      copy[index] = true; //make the bool value true to indicate that it is an active, existing vertex
       return 1;
     }
-  else
+  else //if size is smaller (does not fit in array)
     {
-      return 0;
+      return 0; //do nothing
     }
 }
 
+//Display the vertices and edge values between them
 int graph::display()
 {
   cout << " ";
@@ -238,7 +243,8 @@ int graph::findPath(const char* l1, const char* l2)
   
   cout << verts[index1] << " ";
   printPath(index, index2);
-  cout << "Weight: " << dist[index2];
+  cout << " -> ";
+  cout << "\nWeight: " << dist[index2];
 }
 
 int graph::shortE(bool visit[], int weight[])
