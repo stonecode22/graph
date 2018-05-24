@@ -163,7 +163,7 @@ int graph::findIndex(const char* label)
   //if index is active, label matches with the vertex name, and within the boundaries
   while(copy[index] == true && strcmp(verts[index], label) != 0 && (index < size))
     {
-      index++; //traverse till empty
+      index++; //traverse
     }
   if(index < size) //when empty, but still inside the boundaries, return the index
     {
@@ -178,7 +178,7 @@ int graph::findIndex(const char* label)
 //finds shortest path using Dijkstra's algorithm (Breadth-search)
 int graph::findPath(const char* l1, const char* l2)
 {
-  int index1 = findIndex(l1); //find indices [ERROR: WHEN DELETING, INDEX IS 1 BEHIND AROUND DELETED VERTEX]
+  int index1 = findIndex(l1); //find indices [ERROR]
   int index2 = findIndex(l2);
   if(index1 == -1 || index2 == -1) //if empty
     {
