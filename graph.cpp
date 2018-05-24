@@ -213,7 +213,7 @@ int graph::findPath(const char* l1, const char* l2)
 	    }
 	}
     }
-  /*
+
   for(int i = 0; i < size; i++)
     {
       if(copy[i] == true)
@@ -231,7 +231,6 @@ int graph::findPath(const char* l1, const char* l2)
       if(copy[i] == true)
       cout << index[i] << " ";
     }
-  */
   
   cout << "Path: " << verts[index1]; //lists out the first vertex visited
   printPath(index, index2); //then the other vertices visited
@@ -244,6 +243,8 @@ int graph::findPath(const char* l1, const char* l2)
   else //if it doesn't
     {
       cout << "\nWeight: N/A\n"; //indicates that there is no path
+      cout << "Index1 = " << index1 << endl;
+      cout << "Index2 = " << index2 << endl;
     }
 }
 
