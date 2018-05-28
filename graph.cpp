@@ -55,22 +55,29 @@ graph::~graph()
 //Add Vertex
 int graph::addV(const char* label)
 {
-  int index = findIndex(label); //find the index for the label
-  if(index == -1) //if it returns -1 (-1 means "empty/space allocated")
+  int index = 0; //find the index for the label
+  while(copy[index] == true)
     {
-      return 0; //do nothing
+      if(index < size)
+	{
+	  index++;
+	}
     }
-  if(index < size) //if the index is less than the size
+  if(index < size)
     {
-      verts[index] = new char[strlen(label)+1]; //make a new vertex in the next empty spot
-      strcpy(verts[index], label); //copy label into the vertex[index]
-      copy[index] = true; //make the bool value true to indicate that it is an active, existing vertex
-      return 1;
+      if(copy[index] == false) //if the index is less than the size
+	{
+	  verts[index] = new char[strlen(label)+1]; //make a new vertex in the next empty spot
+	  strcpy(verts[index], label); //copy label into the vertex[index]
+	  copy[index] = true; //make the bool value true to indicate that it is an active, existing vertex
+	  return 1;
+	}
+      else //if size is smaller (does not fit in array)
+	{
+	  return 0; //do nothing
+	}
     }
-  else //if size is smaller (does not fit in array)
-    {
-      return 0; //do nothing
-    }
+  return 0;
 }
 
 //Display the vertices and edge values between them
@@ -161,18 +168,18 @@ int graph::findIndex(const char* label)
 {
   int index = 0;
   //if index is active, label matches with the vertex name, and within the boundaries
-  while(copy[index] == true && strcmp(verts[index], label) != 0 && (index < size))
+  while(index < size)
     {
+      if(copy[index] == true)
+	{
+	  if(strcmp(verts[index], label) == 0)
+	    {
+	      return index;
+	    }
+	}
       index++; //traverse
     }
-  if(index < size) //when empty, but still inside the boundaries, return the index
-    {
-      return index;
-    }
-  else
-    {
-      return -1;
-    }
+  return -1;
 }
 
 //finds shortest path using Dijkstra's algorithm (Breadth-search)
@@ -209,11 +216,12 @@ int graph::findPath(const char* l1, const char* l2)
 	  if(!visit[k] && array[shortEdge][k] && dist[shortEdge] != INT_MAX && ((array[shortEdge][k] + dist[shortEdge]) < dist[k]))
 	    {
 	      index[k] = shortEdge; //set the index to the shortEdge index
-	      dist[k] = array[shortEdge][k] + dist[shortEdge]; //set the distance to an amount less than infinity
+	      dist[k] = array[shortEdge][k] + dist[shortEdge]; //add the weights
 	    }
 	}
     }
 
+  /*
   for(int i = 0; i < size; i++)
     {
       if(copy[i] == true)
@@ -231,20 +239,19 @@ int graph::findPath(const char* l1, const char* l2)
       if(copy[i] == true)
       cout << index[i] << " ";
     }
+  */
   
   cout << "Path: " << verts[index1]; //lists out the first vertex visited
   printPath(index, index2); //then the other vertices visited
   if(dist[index2] != INT_MAX) //if dist[index2], or the weight of the entire path exists
     {
       cout << "\nWeight: " << dist[index2]; //gives the weight
-      cout << "\nIndex1 = " << index1 << endl;
-      cout << "Index2 = " << index2 << endl;
+      return 1;
     }
   else //if it doesn't
     {
       cout << "\nWeight: N/A\n"; //indicates that there is no path
-      cout << "Index1 = " << index1 << endl;
-      cout << "Index2 = " << index2 << endl;
+      return 0;
     }
 }
 
@@ -252,7 +259,7 @@ int graph::findPath(const char* l1, const char* l2)
 int graph::shortE(bool visit[], int weight[])
 {
   int min = INT_MAX; //the minimum initially set to infinity
-  int index; 
+  int index;
 
   for(int i = 0; i < size; i++)
     {
@@ -269,7 +276,7 @@ int graph::shortE(bool visit[], int weight[])
 //prints the shortest path
 void graph::printPath(int weight[], int index)
 {
-  if(weight[index] == -1) //if weight is -1/empty, do nothing
+  if(weight[index] == 0) //if weight is 0/empty, do nothing
     {
       return;
     }
